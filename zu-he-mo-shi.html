@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-        <title>1for</title>
+        <title>组合模式</title>
         <meta charset="utf-8" />
         <link rel="stylesheet" href="./theme/css/main.css" type="text/css" />
                 <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1for Atom Feed" />
@@ -23,17 +23,57 @@
                 <h1><a href="./">1for </a></h1>
                 <nav><ul>
                                                                                                     <li ><a href="./category/books.html">books</a></li>
-                                    <li ><a href="./category/design-patterns.html">design-patterns</a></li>
+                                    <li class="active"><a href="./category/design-patterns.html">design-patterns</a></li>
                                     <li ><a href="./category/extjs.html">extjs</a></li>
                                     <li ><a href="./category/misc.html">misc</a></li>
                                 </ul></nav>
         </header><!-- /#banner -->
-        <ul>
-    <li><a href="./category/books.html">books</a></li>
-    <li><a href="./category/design-patterns.html">design-patterns</a></li>
-    <li><a href="./category/extjs.html">extjs</a></li>
-    <li><a href="./category/misc.html">misc</a></li>
-</ul>
+        <section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="./zu-he-mo-shi.html" rel="bookmark"
+           title="Permalink to 组合模式">组合模式</a></h1>
+          </header>
+
+    <div class="entry-content">
+      <footer class="post-info">
+        <abbr class="published" title="2013-05-18T00:00:00">
+                Sat 18 May 2013
+        </abbr>
+
+                <address class="vcard author">
+                By <a class="url fn" href="./author/1for.html">1for</a>
+        </address>
+        <p>In <a href="./category/design-patterns.html">design-patterns</a>. </p>
+
+</footer><!-- /.post-info -->      <p>参考：《大话设计模式》</p>
+<h3>情景</h3>
+<p>小菜的团队开发一个办公管理系统，但是现在对方要求将该系统应用到全国的各个分部和办事处。
+一种解决方案是在每个分部和办事处各实现一套一样的系统，但是这样就成为了纯粹的拷贝粘贴党了。</p>
+<h3>概念</h3>
+<p>将对象组合成树形结构以表示‘部分-整体’的层次结构。组合模式使得用户对单个对象和组合对象的使用具有一致性。</p>
+<h3>类图</h3>
+<p><img alt="组合模式" src="http://img.my.csdn.net/uploads/201302/05/1360061719_5044.png" /></p>
+<p>Componet被设计为统一的部件，它包括了单个对象所拥有的所有行为。<br>
+Composit是枝节点，继承了部件的方法，同时拥有一个部件的数组。<br>
+Leaf是叶节点，继承了部件的方法，但是会将其中的add，remove方法覆盖成无用的方法。</p>
+    </div><!-- /.entry-content -->
+        <div class="comments">
+      <h2>Comments !</h2>
+      <div id="disqus_thread"></div>
+      <script type="text/javascript">
+        var disqus_identifier = "zu-he-mo-shi.html";
+        (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://1for.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+      </script>
+    </div>
+    
+  </article>
+</section>
         <section id="extras" class="body">
                         <div class="blogroll">
                         <h2>blogroll</h2>
