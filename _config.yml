@@ -1,0 +1,12 @@
+markdown: rdiscount
+permalink: /:title/
+url: http://1for.co
+name: 1for
+author: 1for
+email: shelockid@gmail.com
+weibo: 1679773473 
+github: 1for
+pygments: true
+safe: true
+paginate: 20
+about: "1for's blog"
