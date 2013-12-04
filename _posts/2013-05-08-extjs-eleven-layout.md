@@ -12,7 +12,7 @@ categories: Web
 * 类名: Ext.layout.container.Absolute
 * 描述：这是最简单的布局风格，设置x,y坐标来确定绝对位置。
 * 代码：
-```
+``` javascript
 layout: 'absolute',
 items:[{
     title: 'Panel 1',
@@ -26,7 +26,7 @@ items:[{
 * 类名：Ext.layout.container.Accordion
 * 描述：手风琴效果，可折叠式的布局
 * 代码：
-```
+``` javascript
 layout: 'accordion',
 items:[{
     title: 'Panel 1',
@@ -42,7 +42,7 @@ items:[{
 * 类名：Ext.layout.container.Anchor
 * 描述：Anchor固定，这种布局常用于设置子控件相对于容器的位置。在anchor中指定高/宽,anchor通常为负值（不包含百分比）。
 * 代码：
-```
+``` javascript
 layout: 'anchor',
 items: [{
     title: 'Panel 1',
@@ -62,7 +62,7 @@ items: [{
 * 类名：Ext.layout.container.Border
 * 描述：将容器分为五个区域：east,south,west,north,center
 * 代码：
-```
+``` javascript
 layout:'border',
 defaults: {
     collapsible: true,
@@ -115,7 +115,7 @@ items:[{
 * 类名：Ext.layout.container.Card (Wizard)
 * 描述：布局名称card，用于创建普通的wizard风格的界面，同时开发者必须编写导航的函数实现wizard的业务逻辑
 * 代码：
-```
+``` javascript
 layout:'card',
 activeItem: 0, // index or id
 bbar: ['->', {
@@ -141,7 +141,7 @@ items: [{
 * 类名：Ext.layout.container.Column
 * 描述：列布局方式，通过设定容器的宽度将多个容器放置在同一行，设定的方式包括精确的数值和百分比。
 * 代码：
-```
+``` javascript
 layout:'column',
 items: [{
     title: 'Width = 25%',
@@ -162,7 +162,7 @@ items: [{
 * 类名：Ext.layout.container.Fit
 * 描述：子容器充满父容器（如果有多个就只有一个充满容器）
 * 代码：
-```
+``` javascript
 layout:'fit',
 items: {
     title: 'Fit Panel',
@@ -175,7 +175,7 @@ items: {
 * 类名：Ext.layout.container.Table
 * 描述：类似于HTML表格的样式
 * 代码：
-```
+``` javascript
 layout: {
     type: 'table',
     columns: 4
@@ -194,7 +194,7 @@ items: [
 * 类名：Ext.layout.container.VBox
 * 描述：垂直布局
 * 代码：
-```
+``` javascript
 layout: {
     type: 'vbox'
     align : 'stretch',
@@ -211,7 +211,7 @@ items: [
 * 类名：Ext.layout.container.HBox
 * 描述：水平布局
 * 代码：
-```
+``` javascript
 layout: {
     type: 'hbox',
     pack: 'start',
