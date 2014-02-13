@@ -12,7 +12,7 @@ categories: Web
 * 类名: Ext.layout.container.Absolute
 * 描述：这是最简单的布局风格，设置x,y坐标来确定绝对位置。
 * 代码：
-``` javascript
+{% highlight js linenos %}
 layout: 'absolute',
 items:[{
     title: 'Panel 1',
@@ -20,13 +20,13 @@ items:[{
     y: 50,
     html: 'Positioned at x:50, y:50'
 }]
-```
+{% endhighlight %}
 
 ### Accordion
 * 类名：Ext.layout.container.Accordion
 * 描述：手风琴效果，可折叠式的布局
 * 代码：
-``` javascript
+{% highlight js linenos %}
 layout: 'accordion',
 items:[{
     title: 'Panel 1',
@@ -36,13 +36,13 @@ items:[{
     id: 'panel2',
     html: 'Content'
 }]
-```
+{% endhighlight %}
 
 ### Anchor
 * 类名：Ext.layout.container.Anchor
 * 描述：Anchor固定，这种布局常用于设置子控件相对于容器的位置。在anchor中指定高/宽,anchor通常为负值（不包含百分比）。
 * 代码：
-``` javascript
+{% highlight js linenos %}
 layout: 'anchor',
 items: [{
     title: 'Panel 1',
@@ -56,13 +56,13 @@ items: [{
     title: 'Panel 3',
     anchor: '-10, -262'
 }]
-```
+{% endhighlight %}
 
 ### Border
 * 类名：Ext.layout.container.Border
 * 描述：将容器分为五个区域：east,south,west,north,center
 * 代码：
-``` javascript
+{% highlight js linenos %}
 layout:'border',
 defaults: {
     collapsible: true,
@@ -90,13 +90,13 @@ items: [{
     region:'center',
     margins: '5 0 0 0'
 }]
-```
+{% endhighlight %}
 
 ### TabPanel
 * 类名：Ext.layout.container.Card (TabPanel)
 * 描述：标签页布局，一次展现一个标签内容，在使用的时候不要忘记设置一项为默认展现的标签页
 * 代码：
-```
+{% highlight js linenos %}
 xtype: 'tabpanel',
 activeTab: 0, // index or id
 items:[{
@@ -109,13 +109,13 @@ items:[{
     title: 'Tab 3',
     html: 'This is tab 3 content.'
 }]
-```
+{% endhighlight %}
 
 ### Wizard
 * 类名：Ext.layout.container.Card (Wizard)
 * 描述：布局名称card，用于创建普通的wizard风格的界面，同时开发者必须编写导航的函数实现wizard的业务逻辑
 * 代码：
-``` javascript
+{% highlight js linenos %}
 layout:'card',
 activeItem: 0, // index or id
 bbar: ['->', {
@@ -135,13 +135,13 @@ items: [{
     id: 'card-2',
     html: 'Step 3'
 }]
-```
+{% endhighlight %}
 
 ### Column
 * 类名：Ext.layout.container.Column
 * 描述：列布局方式，通过设定容器的宽度将多个容器放置在同一行，设定的方式包括精确的数值和百分比。
 * 代码：
-``` javascript
+{% highlight js linenos %}
 layout:'column',
 items: [{
     title: 'Width = 25%',
@@ -156,26 +156,26 @@ items: [{
     width: 250,
     html: 'Content'
 }]
-```
+{% endhighlight %}
 
 ### Fit
 * 类名：Ext.layout.container.Fit
 * 描述：子容器充满父容器（如果有多个就只有一个充满容器）
 * 代码：
-``` javascript
+{% highlight js linenos %}
 layout:'fit',
 items: {
     title: 'Fit Panel',
     html: 'Content',
     border: false
 }
-```
+{% endhighlight %}
 
 ### Table
 * 类名：Ext.layout.container.Table
 * 描述：类似于HTML表格的样式
 * 代码：
-``` javascript
+{% highlight js linenos %}
 layout: {
     type: 'table',
     columns: 4
@@ -188,13 +188,13 @@ items: [
     {html:'3,2'},
     {html:'3,3'}
 ]
-```
+{% endhighlight %}
 
 ### vBox
 * 类名：Ext.layout.container.VBox
 * 描述：垂直布局
 * 代码：
-``` javascript
+{% highlight js linenos %}
 layout: {
     type: 'vbox'
     align : 'stretch',
@@ -205,13 +205,13 @@ items: [
     {html:'panel 2', height:150},
     {html:'panel 3', flex:2}
 ]
-```
+{% endhighlight %}
 
 ### hBox
 * 类名：Ext.layout.container.HBox
 * 描述：水平布局
 * 代码：
-``` javascript
+{% highlight js linenos %}
 layout: {
     type: 'hbox',
     pack: 'start',
@@ -222,4 +222,4 @@ items: [
     {html:'panel 2', width:150},
     {html:'panel 3', flex:2}
 ]
-```
+{% endhighlight %}
