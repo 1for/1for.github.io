@@ -3,7 +3,6 @@ layout: post
 title: 我的计算机书单
 date: 2013-05-18
 tags: tmp
-categories: tmp
 ---
 
 [参考链接1](http://blog.jobbole.com/1383/)
