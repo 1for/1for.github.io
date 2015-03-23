@@ -31,3 +31,5 @@ pear.phpunit.de网站上声明将不再支持使用PEAR的方式安装PHPUnit，
         "phpunit/phpunit": "4.1.*"
         }
     }
+
+	composer install
