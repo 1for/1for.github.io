@@ -11,3 +11,5 @@ pygments: true
 safe: true
 paginate: 20
 about: "1for's blog"
+
+theme: jekyll-theme-dinky
