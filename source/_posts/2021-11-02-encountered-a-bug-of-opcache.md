@@ -100,5 +100,4 @@ https://github.com/zendtech/ZendOptimizerPlus/issues/126
 
 #### 参考文档
 * [1] 《如何正确发布PHP代码》https://blog.huoding.com/2016/05/27/515
-* [2] 《
-Cache invalidation for scripts in symlinked folders》https://github.com/zendtech/ZendOptimizerPlus/issues/126
+* [2] 《Cache invalidation for scripts in symlinked folders》https://github.com/zendtech/ZendOptimizerPlus/issues/126
