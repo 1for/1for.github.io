@@ -7,7 +7,7 @@ title: '学以致用'
 subtitle: 'study causing knowledgeable'
 description: '技术博客'
 keywords: '技术博客,emacs,golang,php,服务端,开源爱好者'
-author: 1for
+author: Vanmu万木
 language: zh-CN
 timezone: 'Asia/Shanghai'
 
@@ -103,6 +103,6 @@ theme: yearn
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:  
   type: git
-  repo: https://github.com/1for/1for.github.io
+  repo: git@github.com:1for/1for.github.io.git
   branch: gh-pages
   message: deploy
