@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="keywords" content="技术博客" />
+  <meta name="description" content="技术博客,emacs,golang,php,服务端,开源爱好者" />
+  <meta http-equiv="x-dns-prefetch-control" content="on">
+  <link rel="dns-prefetch" href="https://busuanzi.ibruce.info">
+  <link rel="dns-prefetch" href="https://at.alicdn.com">
+  
+  <link rel="dns-prefetch" href="https://widget.daovoice.io">
+  <link rel="dns-prefetch" href="https://widget-static-cdn.daovoice.io">
+  <link rel="dns-prefetch" href="https://im.daovoice.io">
+  
+  
+  
+  <link rel="stylesheet" type="text/css" href="/./style/main.css">
+	<link rel="shortcut icon" href="/favicon.ico" title="Favicon">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+	<title>踩中一个多年前的 OPCache bug</title>
+  
+  
+    <script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/123456.js","daovoice");daovoice('init',{app_id: "123456"});daovoice('update');
+  </script>
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+<body>
+  <canvas id="pattern-placeholder" height="230"></canvas>
+<div class="navbar-header">
+  <a class="blog-title" href="/">学以致用</a>
+  <a class="face-img" href="/">
+    <img src="https://tva3.sinaimg.cn/crop.0.0.200.200.180/005Kc3C1jw8f2uep0hhkvj305k05k3yk.jpg">
+  </a>
+</div>
+<main>
+  <div class="article-title">
+    
+  
+  <h1 class="title">
+    踩中一个多年前的 OPCache bug
+  </h1>
+  
+
+
+    <ul class="article-info">
+      <li>
+        发布
+        <time datetime="2021-11-02T09:50:35.000Z" itemprop="datePublished">2021-11-02</time>
+      </li>
+      <li>
+        
+    更新 <time datetime="2021-11-02T09:37:32.079Z" itemprop="dateUpdated">2021-11-02</time>
+
+      </li>
+      <li id="busuanzi_container_page_pv">
+        阅读 <span id="busuanzi_value_page_pv"></span>
+      </li>
+    </ul>
+  </div>
+  <div class="container">
+    <div class="article">
+      <div class="content">
+        
+        <p>生活总是会在不经意间给你一个暴击。</p>
+<p>“平台挂了！！” ，运营发来消息<br>打开平台首页，白页！<br>情况紧急，排查时间未知，赶紧准备把最近的改动回滚。<br>询问一圈， 啥？ 这个项目没发版？！！<br>线上摘一个节点，硬着头皮调试吧。<br>一通操作,安上照妖镜，把错误全部打开</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">error_reporting(E_ALL);</span><br><span class="line">ini_set(&#x27;display_errors&#x27;, &#x27;1&#x27;);</span><br><span class="line">ini_set(&#x27;display_startup_errors&#x27;, &#x27;1&#x27;);</span><br></pre></td></tr></table></figure>
+<p>原形毕露</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PHP Fatal error:  Cannot redeclare class Foo in /data/pkg/foo_sdk-2.20.0.207/foo_client.php on line 20</span><br></pre></td></tr></table></figure>
+<p>都说重启大法好， 试试重启 php-fpm<br>What？！ 好了！<br>一脸懵逼。。。</p>
+<hr>
+<p>线上问题算是暂时解决， 接下来慢慢啃这疑难杂症。<br>两个问题：</p>
+<ol>
+<li>为什么会报 “redeclare class” 的错误</li>
+<li>为什么重启就好了</li>
+</ol>
+<hr>
+<p>根据报错， 在文件中加入 debug_print_backtrace() 函数可以看到调用栈， 发现有两处引入 foo_sdk 的逻辑， 使用的代码分别是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//代码1. </span><br><span class="line">require_once(&#x27;/data/sdk/foo_sdk/foo_client.php&#x27;);</span><br><span class="line">//代码2. </span><br><span class="line">require_once(realpath(&#x27;/data/sdk/foo_sdk/foo_client.php&#x27;));</span><br></pre></td></tr></table></figure>
+<p>foo_sdk 目录是一个软链， 每一次发版就链接到最新版本的目录上</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[vanmo@ /data/sdk ]$ ls -l</span><br><span class="line">lrwxrwxrwx  1 root       root         45 10月 20 2021 foo_sdk -&gt; /data/pkg/foo_sdk-2.20.0.207</span><br><span class="line">[vanmo@ /data/sdk ]$ cd /data/pkg/</span><br><span class="line">[vanmo@ /data/pkg ]$ ls -l</span><br><span class="line">drwxrwxr-x  5 root       root         45 10月 20 2021 foo_sdk-2.20.0.207</span><br><span class="line">drwxrwxr-x  5 root       root         45 9月 21 2021 foo_sdk-2.20.0.206</span><br></pre></td></tr></table></figure>
+<p>从时间上可以看到， 最近 foo_sdk 进行了一次升级。代码1还在加载老版本的代码， 而代码2加载的是最新版本的代码。</p>
+<blockquote>
+<p>这里需要补充一点我司项目的依赖部署知识。 公司的基础服务组提供服务相关的SDK， 一台服务器上多个项目会共用一份SDK部署，由服务的开发人员进行维护。 此处暂不论这套方式的优劣。在此场景中， 服务SDK的更新导致业务项目崩溃。这让维护业务的人员猝不及防。</p>
+</blockquote>
+<p>至此基本就可以确定了问题复现的流程，重启Fpm -&gt; 请求接口让相关缓存建立 -&gt; 更新SDK版本，软链目的地调整 -&gt; 再请求接口 -&gt; 报错</p>
+<p>问题集中到了  require_once , realpath 相关函数知识上。</p>
+<blockquote>
+<p>require_once 源码解析</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">//https://raw.githubusercontent.com/php/php-src/PHP-5.6/Zend/zend_vm_execute.h line 2952</span><br><span class="line">resolved_path = zend_resolve_path(Z_STRVAL_P(inc_filename), Z_STRLEN_P(inc_filename) TSRMLS_CC); // 解析文件路径</span><br><span class="line">if (resolved_path) &#123;</span><br><span class="line">    failure_retval = zend_hash_exists(&amp;EG(included_files), resolved_path, strlen(resolved_path)+1); // 是否已经 included</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    resolved_path = Z_STRVAL_P(inc_filename);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当 require_once 的是个软链时，会通过 zend_resolve_path 获取到软链指向的真实链接。 这中间有 php 自己维护的 realpath_cache， 当软链指向调整后， realpath_cache 很快就会更新。</p>
+<p>require_once 和 realpath 本身的逻辑是没有问题的。但是该项目使用了 Opcache 扩展。</p>
+<p>关闭opcache，报错消失</p>
+<hr>
+<p>难道！！ opcache 有 bug？ 软链目标变化后， opcache 一直没有更新对应路径的真实地址。</p>
+<p>其实这个问题，早在 2013年就在github有相关讨论（一脸惭愧）</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/zendtech/ZendOptimizerPlus/issues/126">https://github.com/zendtech/ZendOptimizerPlus/issues/126</a></p>
+<p>总结一下相关信息就是， opcache 并没有使用 php 内置的 realpath cache， 而是自己有一套缓存逻辑。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// https://github.com/zendtech/ZendOptimizerPlus/blob/3b16ca512290b0416baf02962beedc703147a97a/ZendAccelerator.c#L917</span><br><span class="line"></span><br><span class="line">/* Instead of resolving full real path name each time we need to identify file,</span><br><span class="line"> * we create a key that consist from requested file name, current working</span><br><span class="line"> * directory, current include_path, etc */</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>从上述注释，可以推测相关key的计算方法为<br>“PARENT_SCRIPT_FOLDER:SYMLINKED_PATH(require_once里填写的文件名):INCLUDE_PATH_CONTENT”</p>
+<p>这个key对应的缓存永不失效，除非重启php-fpm</p>
+<p>结</p>
+<h4 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h4><ul>
+<li>[1] 《如何正确发布PHP代码》<a target="_blank" rel="noopener" href="https://blog.huoding.com/2016/05/27/515">https://blog.huoding.com/2016/05/27/515</a></li>
+<li>[2] 《<br>Cache invalidation for scripts in symlinked folders》<a target="_blank" rel="noopener" href="https://github.com/zendtech/ZendOptimizerPlus/issues/126">https://github.com/zendtech/ZendOptimizerPlus/issues/126</a></li>
+</ul>
+
+      </div>
+        <div class="support-author">
+          <p>感谢您的阅读。 🙏
+          <a href="https://888.com/index.html" target="_blank">关于转载请看这里</a>
+            <!--<a class="btn-pay"  href="#pay-modal">¥ 打赏支持</a>-->
+          </p>
+        </div>
+        <!--
+            <div class="like ">
+              <div class="like-button">
+                <a id="like-note" href="">
+                  <i class="icon-heart"></i>喜欢
+                </a>
+              </div>
+              <span id="likes-count">256</span>
+            </div>
+        -->
+        <div class="otherLink">
+          <div class="previous">
+          </div>
+          <div class="next">
+          </div>
+        </div>
+        <div class="comments" id="comments">
+          
+
+        </div>
+      </div>
+    </div>
+   </div>
+</main>
+<div class="footer">
+  <div class="info">
+    <p>
+    <a target="_blank" rel="noopener" href="https://hexo.io"> Hexo </a> 强力驱动 |
+      <a target="_blank" rel="noopener" href="https://github.com/Youthink/hexo-themes-yearn"> Yearn </a>
+      主题
+    </p>
+    <p>&copy;2013-2021 1for的博客</p>
+  </div>
+</div>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<script>//console
+  var consoleConfig = '\n欢迎访问 https://hufangyun.com ，围观小猿大圣的博客(づ｡◕‿‿◕｡)づ！\n,\n本博客使用 %cHexo%c 搭建，博客主题为小猿大圣开发的 %chexo-themes-yearn%c ~~~ 🎉🎉🎉 \n\n源码 https://github.com/Youthink/hexo-themes-yearn \n\n如果喜欢可以 star 支持一下 ❤️~\n,\n扫描下面的二维码，在手机上查看博客！\n,https://static.hufangyun.com/blog-url-qrcode-180-180.png,\n 想知道这个效果如何实现的？博客内搜索 console 彩蛋 🚀 ！\n'.split(',');
+  var canConsole = false;
+  var consoleInfo = (function(consoleConfig) {
+  if (!canConsole || !consoleConfig || consoleConfig.length < 1) {
+    return;
+  }
+  var consoleColor = '#6190e8';
+  var _console;
+  var backgroundTextStyle = 'padding: 1px 5px;color: #fff;background: ' + consoleColor + ';'
+  var textStyle = 'color: ' + consoleColor + ';';
+
+  consoleConfig.map(o => {
+    var num = (o.match(/%c/g) || []).length;
+    if(/^http(s)?:\/\//.test(o)) {
+      console.log('%c     ', 'background: url(' + o + ') no-repeat left center;font-size: 180px;');
+      return;
+    }
+    if (num > 0) {
+      var logArguments = [];
+      for (var i = 0; i < num; i++) {
+        if (i % 2 === 0) {
+          logArguments.push(backgroundTextStyle);
+        } else {
+          logArguments.push(textStyle);
+        }
+      }
+      (_console = console).log.apply(_console, ['%c' + o, textStyle].concat(logArguments));
+      return;
+    }
+    console.log('%c' + o, textStyle);
+  });
+}(consoleConfig));</script><script type="text/javascript" src="/./js/main.js"></script>
+
+  <script src="//at.alicdn.com/t/font_159214_mvtxvg9me9.js"></script>
+</body>
+</html>
